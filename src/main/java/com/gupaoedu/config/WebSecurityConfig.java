@@ -1,8 +1,7 @@
 package com.gupaoedu.config;
 
-
-import com.gupaoedu.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,16 +17,24 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+//    @Autowired
+//    private UserService userService;
+
     @Autowired
-    private UserService userService;
-    @Autowired
+    @Qualifier("passwordEncoder")
     private PasswordEncoder passwordEncoder;
 
 
+
+
+
+
     @Bean
-    public PasswordEncoder myPasswordEncoder() {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -46,9 +53,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         //UserDetailsService类
-        auth.userDetailsService(userService)
-                //加密策略
-                .passwordEncoder(passwordEncoder);
+//        auth.userDetailsService(userService)
+//                //加密策略
+//                .passwordEncoder(passwordEncoder);
+
+
+
+        auth.inMemoryAuthentication()
+                .withUser("zz")
+                .password(passwordEncoder.encode("123")).roles("r1")
+        ;
+
     }
 
     //AuthenticationManager对象在OAuth2认证服务中要使用，提取放入IOC容器中
